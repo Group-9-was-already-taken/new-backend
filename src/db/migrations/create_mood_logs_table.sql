@@ -1,0 +1,9 @@
+-- Create mood_logs table
+CREATE TABLE IF NOT EXISTS mood_logs (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    mood_level INTEGER NOT NULL CHECK (mood_level BETWEEN 1 AND 5),
+    mood_note TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
