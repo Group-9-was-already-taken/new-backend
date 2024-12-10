@@ -138,6 +138,40 @@ router.get('/me', auth, async (req, res) => {
   }
 });
 
+// Get user information
+router.get('/user', auth, async (req, res) => {
+  try {
+    console.log('Getting user info for user ID:', req.user.userId);
+
+    const result = await db.query(
+      'SELECT user_id, username, email, name, birthday, gender FROM users WHERE user_id = $1',
+      [req.user.userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found'
+      });
+    }
+
+    const user = result.rows[0];
+    console.log('Found user:', user);
+
+    res.json({
+      success: true,
+      user: user
+    });
+  } catch (error) {
+    console.error('Get user info error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get user information',
+      details: error.message
+    });
+  }
+});
+
 // Update user profile
 router.put('/users/:userId', auth, async (req, res) => {
   try {
