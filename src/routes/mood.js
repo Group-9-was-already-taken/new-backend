@@ -27,15 +27,23 @@ router.post('/', [
 
     const { mood_level, mood_note } = req.body;
     
+    if (!req.user || !req.user.user_id) {
+      return res.status(401).json({
+        success: false,
+        error: 'User not authenticated',
+        details: 'No user ID found'
+      });
+    }
+
     console.log('Executing query with params:', {
-      userId: req.user.userId,
+      user_id: req.user.user_id,
       mood_level,
       mood_note
     });
 
     const result = await db.query(
       'INSERT INTO mood_logs (user_id, mood_level, mood_note) VALUES ($1, $2, $3) RETURNING *',
-      [req.user.userId, mood_level, mood_note]
+      [req.user.user_id, mood_level, mood_note]
     );
 
     console.log('Saved mood log:', result.rows[0]);
@@ -51,8 +59,7 @@ router.post('/', [
     res.status(500).json({ 
       success: false,
       error: 'Failed to save mood',
-      details: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      details: error.message
     });
   }
 });
@@ -62,7 +69,7 @@ router.get('/', auth, async (req, res) => {
   try {
     console.log('Getting mood logs for user:', req.user);
     
-    if (!req.user || !req.user.userId) {
+    if (!req.user || !req.user.user_id) {
       console.error('No user ID found in token');
       return res.status(401).json({
         success: false,
@@ -73,7 +80,7 @@ router.get('/', auth, async (req, res) => {
 
     const result = await db.query(
       'SELECT * FROM mood_logs WHERE user_id = $1 ORDER BY timestamp DESC',
-      [req.user.userId]
+      [req.user.user_id]
     );
 
     console.log('Found mood logs:', result.rows);
@@ -88,8 +95,7 @@ router.get('/', auth, async (req, res) => {
     res.status(500).json({ 
       success: false,
       error: 'Failed to get mood logs',
-      details: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      details: error.message
     });
   }
 });
