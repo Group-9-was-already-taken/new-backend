@@ -21,7 +21,10 @@ const auth = async (req, res, next) => {
       throw new Error('User not found');
     }
 
-    req.user = result.rows[0];
+    req.user = {
+      ...result.rows[0],
+      userId: result.rows[0].user_id // Ensure userId is set correctly
+    };
     next();
   } catch (error) {
     console.error('Auth middleware error:', error);

@@ -122,6 +122,8 @@ router.get('/users/:userId', auth, async (req, res) => {
 // Get current user
 router.get('/me', auth, async (req, res) => {
   try {
+    console.log('Getting current user info for user ID:', req.user.userId);
+
     const result = await db.query(
       'SELECT user_id, username, email, name, birthday, gender FROM users WHERE user_id = $1',
       [req.user.userId]
@@ -131,7 +133,10 @@ router.get('/me', auth, async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    res.json(result.rows[0]);
+    const user = result.rows[0];
+    console.log('Found user:', user);
+
+    res.json(user);
   } catch (error) {
     console.error('Get current user error:', error);
     res.status(500).json({ error: 'Server error' });
