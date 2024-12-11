@@ -7,6 +7,7 @@ const exercisesRoutes = require('./exercises');
 const emergencyRoutes = require('./emergency');
 const chatRoutes = require('./chat');
 const infoRoutes = require('./info');
+const quizRoutes = require('./quiz');
 
 const router = express.Router();
 
@@ -21,5 +22,6 @@ router.use('/exercises', exercisesRoutes);
 router.use('/emergency-resources', emergencyRoutes);
 router.use('/chat-messages', chatRoutes);
 router.use('/info', infoRoutes);
+router.use('/', quizRoutes);
 
 module.exports = router;
